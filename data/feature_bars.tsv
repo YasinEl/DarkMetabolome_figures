@@ -1,0 +1,9 @@
+variable	variable.1	value
+Features (no filter)	Annotated	11.1714844599
+Features (filtered)	Annotated	16.1960784313726
+Features (no filter)	No MS/MS	13.4427298413388
+Features (filtered)	No MS/MS	5.88235294117647
+Features (no filter)	Has MS/MS	42.3712236470333
+Features (filtered)	Has MS/MS	46.2745098039216
+Features (no filter)	Has chimeric MS/MS	33.0145620517279
+Features (filtered)	Has chimeric MS/MS	31.6470588235294
