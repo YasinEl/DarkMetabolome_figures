@@ -1,13 +1,19 @@
 # DarkMetabolome_figures
 
-Code and tables to produce the Figures to the DarkMetabolome paper
+Code and tables to produce Figures 1e,f, and g of the DarkMetabolome paper and code used to perfrom the underlying analysis.
 
 
 # To reproduce a figure
 
-1. Clone the repository using `git clone https://github.com/YasinEl/DarkMetabolome_figures.git`
+1. Clone the repository using `git clone --branch correspondence https://github.com/YasinEl/DarkMetabolome_figures.git`
 2. Set the working directory to /DarkMetabolome_figures
 3. Run the R script to reproduce the figure of your choice
+
+# To redo the analysis 
+
+1. Download the Raw data and GNPS annotation outputs. (Links in Supplementary Information of manuscript)
+2. Adapt the output and input paths in the MZmine batch file before running it.
+3. Make sure you set all paths in R the Rscripts as required to point to the appropriate MZmine output files and python scripts.
 
 
 # Raw data sources
