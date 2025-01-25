@@ -60,16 +60,27 @@ Further information can be found at https://github.com/zamboni-lab/ion-type-anal
 
 ## References
 Bayless, Amanda. 2023. “Multi’omic Characterization of Human Whole Stool RGTMs.” Gaithersburg, MD: National Institute of Standards and Technology. https://doi.org/10.6028/nist.ir.8451.
+
 Brungs, Corinna, Robin Schmid, Steffen Heuckeroth, Aninda Mazumdar, Matúš Drexler, Pavel Šácha, Pieter C. Dorrestein, et al. 2024. “Efficient Generation of Open Multi-Stage Fragmentation Mass Spectral Libraries.” ChemRxiv. https://doi.org/10.26434/chemrxiv-2024-l1tqh-v2.
+
 Chambers, Matthew C., Brendan Maclean, Robert Burke, Dario Amodei, Daniel L. Ruderman, Steffen Neumann, Laurent Gatto, et al. 2012. “A Cross-Platform Toolkit for Mass Spectrometry and Proteomics.” Nature Biotechnology 30 (10): 918–20.
+
 El Abiead, Yasin, Maximilian Milford, Reza M. Salek, and Gunda Koellensperger. 2021. “mzRAPP: A Tool for Reliability Assessment of Data Pre-Processing in Non-Targeted Metabolomics.” Bioinformatics  37 (20): 3678–80.
+
 Gloaguen, Yoann, Jennifer A. Kirwan, and Dieter Beule. 2022. “Deep Learning-Assisted Peak Curation for Large-Scale LC-MS Metabolomics.” Analytical Chemistry 94 (12): 4930–37.
+
 Heuckeroth, Steffen, Tito Damiani, Aleksandr Smirnov, Olena Mokshyna, Corinna Brungs, Ansgar Korf, Joshua David Smith, et al. 2024. “Reproducible Mass Spectrometry Data Processing and Compound Annotation in MZmine 3.” Nature Protocols, May. https://doi.org/10.1038/s41596-024-00996-y.
+
 Hulstaert, Niels, Jim Shofstahl, Timo Sachsenberg, Mathias Walzer, Harald Barsnes, Lennart Martens, and Yasset Perez-Riverol. 2020. “ThermoRawFileParser: Modular, Scalable, and Cross-Platform RAW File Conversion.” Journal of Proteome Research 19 (1): 537–42.
+
 Lawson, Thomas N., Ralf J. M. Weber, Martin R. Jones, Andrew J. Chetwynd, Giovanny Rodrı Guez-Blanco, Riccardo Di Guida, Mark R. Viant, and Warwick B. Dunn. 2017. “msPurity: Automated Evaluation of Precursor Ion Purity for Mass Spectrometry-Based Fragmentation in Metabolomics.” Analytical Chemistry 89 (4): 2432–39.
+
 Li, Shuzhao, and Shujian Zheng. 2023. “Generalized Tree Structure to Annotate Untargeted Metabolomics and Stable Isotope Tracing Data.” Analytical Chemistry 95 (15): 6212–17.
+
 MacLean, Brendan, Daniela M. Tomazela, Nicholas Shulman, Matthew Chambers, Gregory L. Finney, Barbara Frewen, Randall Kern, David L. Tabb, Daniel C. Liebler, and Michael J. MacCoss. 2010. “Skyline: An Open Source Document Editor for Creating and Analyzing Targeted Proteomics Experiments.” Bioinformatics  26 (7): 966–68.
+
 Martens, Lennart, Matthew Chambers, Marc Sturm, Darren Kessner, Fredrik Levander, Jim Shofstahl, Wilfred H. Tang, et al. 2011. “mzML—a Community Standard for Mass Spectrometry Data*.” Molecular & Cellular Proteomics: MCP 10 (1): R110.000133.
+
 Mildau, Kevin, Justin J. J. van der Hooft, Mira Flasch, Benedikt Warth, Yasin El Abiead, Gunda Koellensperger, Jürgen Zanghellini, and Christoph Büschl. 2022. “Homologue Series Detection and Management in LC-MS Data with homologueDiscoverer.” Bioinformatics  38 (22): 5139–40.
 Nash, William J., Judith B. Ngere, Lukas Najdekr, and Warwick B. Dunn. 2024. “Characterization of Electrospray Ionization Complexity in Untargeted Metabolomic Studies.” Analytical Chemistry 96 (27): 10935–42.
 Xing, Shipei, Sam Shen, Banghua Xu, Xiaoxiao Li, and Tao Huan. 2023. “BUDDY: Molecular Formula Discovery via Bottom-up MS/MS Interrogation.” Nature Methods 20 (6): 881–90.
