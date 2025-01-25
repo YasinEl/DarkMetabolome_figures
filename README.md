@@ -82,7 +82,9 @@ MacLean, Brendan, Daniela M. Tomazela, Nicholas Shulman, Matthew Chambers, Grego
 Martens, Lennart, Matthew Chambers, Marc Sturm, Darren Kessner, Fredrik Levander, Jim Shofstahl, Wilfred H. Tang, et al. 2011. “mzML—a Community Standard for Mass Spectrometry Data*.” Molecular & Cellular Proteomics: MCP 10 (1): R110.000133.
 
 Mildau, Kevin, Justin J. J. van der Hooft, Mira Flasch, Benedikt Warth, Yasin El Abiead, Gunda Koellensperger, Jürgen Zanghellini, and Christoph Büschl. 2022. “Homologue Series Detection and Management in LC-MS Data with homologueDiscoverer.” Bioinformatics  38 (22): 5139–40.
+
 Nash, William J., Judith B. Ngere, Lukas Najdekr, and Warwick B. Dunn. 2024. “Characterization of Electrospray Ionization Complexity in Untargeted Metabolomic Studies.” Analytical Chemistry 96 (27): 10935–42.
+
 Xing, Shipei, Sam Shen, Banghua Xu, Xiaoxiao Li, and Tao Huan. 2023. “BUDDY: Molecular Formula Discovery via Bottom-up MS/MS Interrogation.” Nature Methods 20 (6): 881–90.
 
 
