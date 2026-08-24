@@ -102,6 +102,7 @@ path_isoCheckFromMS1 = intermediate("isoCheckFromMS1.csv")
 # figure tables written at the end of this script (inputs of the make_Fig*.R scripts)
 path_out_feature_map = paste0(results_directory, "feature_map.tsv")
 path_out_feature_map_histograms = paste0(results_directory, "FeatureMapHistograms.tsv")
+path_out_feature_bars = paste0(results_directory, "feature_bars.tsv")
 
 # the two most concentrated samples, used as the RT reference for the feature map
 rt_reference_samples = c("015_Sa02_Water_POS.mzML", "017_Sa01_Water_POS.mzML")
@@ -990,3 +991,34 @@ scatter_dt[annotated_grp %in% c('no', 'RTGroup', 'has MS2', 'chimeric MS2'), ann
 
 # this table is ./data/feature_map.tsv, the input of make_Fig2a_plots.R
 fwrite(scatter_dt, path_out_feature_map, sep = '\t')
+
+
+####
+##Feature bar table (the two feature bars of make_Fig2b_plots.R)
+####################################
+####################################
+
+# One bar per feature set: every feature ("Features (no filter)") and the features passing
+# all filters ("Features (filtered)"). Polymers count as annotated regardless of whether
+# they carry an MS2 scan, the same way the histogram above treats them.
+dt_bars = copy(dt_meltedupset_plot_features)
+
+dt_bars[, category := 'No MS/MS']
+dt_bars[annotated == 'has MS2', category := 'Has MS/MS']
+dt_bars[annotated == 'chimeric MS2', category := 'Has chimeric MS/MS']
+dt_bars[annotated == 'yes' | homologue_id > 0, category := 'Annotated']
+
+dt_bars = melt(dt_bars,
+               id.vars = c('row ID', 'category'),
+               measure.vars = c('NoFilter', 'CobinedFilters'))
+dt_bars = dt_bars[value >= 1]
+
+dt_bars[, variable := as.character(variable)]
+dt_bars[variable == 'NoFilter', variable := 'Features (no filter)']
+dt_bars[variable == 'CobinedFilters', variable := 'Features (filtered)']
+
+dt_feature_bars = dt_bars[, .(value = .N), by = .(variable, variable.1 = category)]
+dt_feature_bars[, value := value/sum(value)*100, by = .(variable)]
+
+# this table is ./data/feature_bars.tsv, the input of make_Fig2b_plots.R
+fwrite(dt_feature_bars, path_out_feature_bars, sep = '\t')
