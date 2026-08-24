@@ -11,11 +11,13 @@ library(msPurity)
 
 
 
-# python resources
+# python resources (paths relative to the repository root, i.e. the working directory)
 python_path = "path to python/python.exe"
-neat_ms_script = "run_neatms_on_mzmine.py"
-khipu_script = "annotate_mzmine.py"
-clique_finder_script = "findCliques.py"
+neat_ms_script = "code/run_neatms_on_mzmine.py"   # also needs --model_path, see README
+khipu_script = "code/annotate_mzmine.py"
+clique_finder_script = "code/findCliques.py"
+# one of the default models shipped with NeatMS (https://github.com/bihealth/NeatMS)
+neatms_model = "path to neatms_default_model.h5"
 
 
 # base directory (trailing separator matters: every path below is built with paste0)
@@ -179,8 +181,9 @@ if(!file.exists(path_neatms)){
   
   #Run NeatMS
   system2(python_path, 
-          args = c(neat_ms_script, # also set path to model here or in script directly. 
-                   path_raw_files, path_tmp_file, path_neatms))
+          args = c(neat_ms_script,
+                   path_raw_files, path_tmp_file, path_neatms,
+                   '--model_path', neatms_model))
 } else {
   
   print('NeatMS already run')
