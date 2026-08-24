@@ -78,7 +78,11 @@ def main():
     parser.add_argument('raw_data_folder_path', type=str, help='Path to the raw data folder')
     parser.add_argument('feature_table_path', type=str, help='Path to the feature table file')
     parser.add_argument('output_file_path', type=str, help='Path to the output file')
-    parser.add_argument('--model_path', type=str, default = "C:/Users/elabi/projects/NeatMS/data/model/neatms_default_model.h5", help='Path to the model file')
+    parser.add_argument('--model_path', type=str, required=True,
+                        help='Path to the NeatMS model file (.h5). One of the default models '
+                             'shipped with NeatMS was used here: '
+                             'https://github.com/bihealth/NeatMS -- see '
+                             'https://neatms.readthedocs.io/en/latest/')
     parser.add_argument('--threshold', type=float, default=0.22, help='Threshold for peak prediction')
 
     print('Starting NeatMS experiment')

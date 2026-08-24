@@ -41,8 +41,11 @@ adduct_search_patterns = [
 ]
 
 def process_khipu(input_path, output_path):
+    # the input written by run_feature_analysis.R is id_number, mz, rtime, then one area
+    # column per sample -- so the intensity columns are everything after the first three
+    n_columns = len(open(input_path).readline().rstrip("\n").split("\t"))
     peaklist = read_features_from_text(open(input_path).read(),
-                        id_col=0, mz_col=1, rtime_col=2, intensity_cols=(3, 24), delimiter="\t")
+                        id_col=0, mz_col=1, rtime_col=2, intensity_cols=(3, n_columns), delimiter="\t")
 
     khipu_list, all_assigned_peaks = peaklist_to_khipu_list(peaklist, 
                         isotope_search_patterns=isotope_search_patterns, 
