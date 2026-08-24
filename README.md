@@ -34,19 +34,23 @@ export (see the note in `run_feature_analysis.R` about which task it came from).
 Set that flag to `FALSE` to recompute everything from your own MZmine output; all generated
 files then go to `./results/` and the shipped tables are left untouched.
 
+## Third-party inputs
+
+- **NeatMS model** — one of the default models that ship with
+  [NeatMS](https://github.com/bihealth/NeatMS) (see the
+  [NeatMS documentation](https://neatms.readthedocs.io/en/latest/)). Pass it to
+  `run_neatms_on_mzmine.py` with `--model_path`.
+- **`data/repeating_units_+.tsv`** — the repeating-unit table used to label polymer series,
+  taken from [stanstrup/commonMZ](https://github.com/stanstrup/commonMZ) (`inst/extdata/`,
+  MIT licensed). A copy is included here for convenience.
+
 ## Still required from elsewhere
 
 - **Raw data** — `MSV000093526` (mzML). Needed for NeatMS, the MS1 isotope check and the
   msPurity chimeric-spectrum labelling; every other step runs off the cached tables above.
 - **MZmine outputs** — `features.csv`, `final_feature_table_after_alignment.csv`,
-  `singles/`, the IIMN edge CSV and the MGF, produced by `data/mzmine_batch.mzbatch`
-  (too large to ship).
-- **NeatMS model** — `neatms_default_model.h5`, shipped with
-  [NeatMS](https://github.com/bihealth/NeatMS); pass it to `run_neatms_on_mzmine.py`
-  via `--model_path`.
-- **`repeating_units_+.tsv`** — from
-  [stanstrup/commonMZ](https://github.com/stanstrup/commonMZ/blob/master/inst/extdata/repeating_units_%2B.tsv),
-  place in `data/`.
+  `singles/`, the IIMN edge CSV and the MGF. These are reproduced by running
+  `data/mzmine_batch.mzbatch` in MZmine 4.0.1 on the raw data; they are too large to ship.
 - **`PurityMS.csv`** — msPurity output, ~300 MB, regenerated from the raw data on first run.
 - **Q Exactive MZmine export** — second input of `code/run_FigS3_analysis.R`.
 

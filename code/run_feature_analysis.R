@@ -75,9 +75,10 @@ path_tmp_file_tsv = paste0(results_directory, "tmp.tsv")
 # downloaded merged_results_with_gnps.tsv of whichever task you want to reproduce.
 gnps_lib_annotations = paste0(base_directory, "data/gnps_library_annotations/merged_results_with_gnps.tsv")
 
-# Repeating-unit (polymer) labels. NOT shipped -- download from
-# https://github.com/stanstrup/commonMZ/blob/master/inst/extdata/repeating_units_%2B.tsv
-# and place it here:
+# Repeating-unit (polymer) labels, from Jan Stanstrup's commonMZ (MIT):
+# https://github.com/stanstrup/commonMZ -> inst/extdata/repeating_units_+.tsv
+# A copy is shipped in ./data/ (fetched from commonMZ master; refetch it if you want the
+# current version).
 path_stanstrupDelta_annotations = paste0(base_directory, "data/repeating_units_+.tsv")
 
 
