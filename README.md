@@ -15,6 +15,41 @@ Code and tables to produce Figures 1e,f, and g of the DarkMetabolome paper and c
 2. Adapt the output and input paths in the MZmine batch file before running it.
 3. Make sure you set all paths in R the Rscripts as required to point to the appropriate MZmine output files and python scripts.
 
+## Cached intermediates
+
+`data/pipeline_intermediates/` holds the intermediate tables of the manuscript run, so that
+most of `code/run_feature_analysis.R` can be re-run without the raw data:
+
+| File | Step it belongs to |
+|---|---|
+| `khipu_output.csv` | isotope annotation (`annotate_mzmine.py`) |
+| `astral_output_mzmine_iin_nodes.csv`, `astral_output_mzmine_iin_edges.csv` | correlation-group cliques (`findCliques.py`) |
+| `astral_output_mzmine_polymerIDs.csv`, `astral_output_mzmine_polymerAnnotations.csv` | homologueDiscoverer polymer annotation |
+| `FeatureWithFilterInfo.csv` | reference copy of the per-feature filter/annotation table the pipeline builds |
+
+`data/gnps_library_annotations/merged_results_with_gnps.tsv` is the GNPS2 library-annotation
+export (see the note in `run_feature_analysis.R` about which task it came from).
+
+`run_feature_analysis.R` picks these up automatically (`use_shipped_intermediates = TRUE`).
+Set that flag to `FALSE` to recompute everything from your own MZmine output; all generated
+files then go to `./results/` and the shipped tables are left untouched.
+
+## Still required from elsewhere
+
+- **Raw data** — `MSV000093526` (mzML). Needed for NeatMS, the MS1 isotope check and the
+  msPurity chimeric-spectrum labelling; every other step runs off the cached tables above.
+- **MZmine outputs** — `features.csv`, `final_feature_table_after_alignment.csv`,
+  `singles/`, the IIMN edge CSV and the MGF, produced by `data/mzmine_batch.mzbatch`
+  (too large to ship).
+- **NeatMS model** — `neatms_default_model.h5`, shipped with
+  [NeatMS](https://github.com/bihealth/NeatMS); pass it to `run_neatms_on_mzmine.py`
+  via `--model_path`.
+- **`repeating_units_+.tsv`** — from
+  [stanstrup/commonMZ](https://github.com/stanstrup/commonMZ/blob/master/inst/extdata/repeating_units_%2B.tsv),
+  place in `data/`.
+- **`PurityMS.csv`** — msPurity output, ~300 MB, regenerated from the raw data on first run.
+- **Q Exactive MZmine export** — second input of `code/run_FigS3_analysis.R`.
+
 
 # Raw data sources
 

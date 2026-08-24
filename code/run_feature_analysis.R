@@ -18,8 +18,26 @@ khipu_script = "annotate_mzmine.py"
 clique_finder_script = "findCliques.py"
 
 
-# base directory
-base_directory = getwd()
+# base directory (trailing separator matters: every path below is built with paste0)
+base_directory = paste0(normalizePath(getwd(), winslash = "/"), "/")
+
+# Reuse the cached intermediates shipped in ./data/pipeline_intermediates (produced by the
+# manuscript run) instead of recomputing them. This lets the pipeline be re-run without the
+# raw data. Set to FALSE when processing your own MZmine output, so that everything is
+# recomputed into ./results/ and the shipped tables are left untouched.
+use_shipped_intermediates = TRUE
+
+results_directory = paste0(base_directory, "results/")
+dir.create(results_directory, showWarnings = FALSE)
+shipped_intermediates = paste0(base_directory, "data/pipeline_intermediates/")
+
+# returns the shipped copy of an intermediate if it exists and reuse is enabled,
+# otherwise a path inside ./results/ that the step below will write
+intermediate <- function(filename){
+  shipped = paste0(shipped_intermediates, filename)
+  if(use_shipped_intermediates && file.exists(shipped)) return(shipped)
+  return(paste0(results_directory, filename))
+}
 
 
 #mzmine output paths
@@ -39,31 +57,53 @@ path_mzmls = c('path to mzml files/015_Sa02_Water_POS.mzML',
 
 
 # metadata
-path_metadata = '.data/sampleDilutions.csv' # metadata file
+path_metadata = './data/sampleDilutions.csv' # metadata file
 
 
 
 #temporary file paths
-path_tmp_file = paste0(base_directory, "tmp.csv")
-path_tmp_file_tsv = paste0(base_directory, "tmp.tsv")
+path_tmp_file = paste0(results_directory, "tmp.csv")
+path_tmp_file_tsv = paste0(results_directory, "tmp.tsv")
 
 
 
 # annotation files
-gnps_lib_annotations = paste0(base_directory, "139a1bc51ff94570bb3bdfa82e52315f/nf_output/library/merged_results_with_gnps.tsv") # GNPS library annotations can be downloaded from https://gnps2.org/status?task=139a1bc51ff94570bb3bdfa82e52315f
-path_stanstrupDelta_annotations = 'C:/Users/elabi/projects/commonMZ/inst/extdata/repeating_units_+.tsv' # Repeating units labeling can be downloaded from https://github.com/stanstrup/commonMZ/blob/master/inst/extdata/repeating_units_%2B.tsv
+# GNPS library annotations. A copy is shipped in ./data/gnps_library_annotations/.
+# NOTE: the shipped file is the output of GNPS2 task ff98032261a9490eb596d98566758a79;
+# the manuscript cites task 139a1bc51ff94570bb3bdfa82e52315f
+# (https://gnps2.org/status?task=139a1bc51ff94570bb3bdfa82e52315f). Point this at the
+# downloaded merged_results_with_gnps.tsv of whichever task you want to reproduce.
+gnps_lib_annotations = paste0(base_directory, "data/gnps_library_annotations/merged_results_with_gnps.tsv")
+
+# Repeating-unit (polymer) labels. NOT shipped -- download from
+# https://github.com/stanstrup/commonMZ/blob/master/inst/extdata/repeating_units_%2B.tsv
+# and place it here:
+path_stanstrupDelta_annotations = paste0(base_directory, "data/repeating_units_+.tsv")
 
 
-# script output file paths
-path_chimericThings = paste0(base_directory, "astral_output_mzmine_chimericThings.csv")
-path_neatms = paste0(base_directory, "neatms_output.csv")
-path_khipu = paste0(base_directory, "khipu_output.csv")
-path_IIN_cliques_nodes = paste0(base_directory, "astral_output_mzmine_iin_nodes.csv")
-path_polymerAnnotations = paste0(base_directory, "astral_output_mzmine_polymerAnnotations.csv")
-path_polymerIDs = paste0(base_directory, "astral_output_mzmine_polymerIDs.csv")
-path_PurityMS = 'C:/PostDoc/Project_ISF_suizdak/allIsos_postProc/PurityMS.csv'
-path_MS2isf_relationships = paste0(base_directory, "astral_output_mzmine_msisf.csv")
-path_isoCheckFromMS1 = paste0(base_directory, "isoCheckFromMS1.csv")
+# script output / intermediate file paths.
+# intermediate() resolves to the shipped copy under ./data/pipeline_intermediates/ when one
+# exists (and use_shipped_intermediates is TRUE), otherwise to ./results/, where the step
+# that owns the file writes it.
+path_khipu = intermediate("khipu_output.csv")                                   # shipped
+path_IIN_cliques_nodes = intermediate("astral_output_mzmine_iin_nodes.csv")     # shipped
+path_IIN_cliques_edges = intermediate("astral_output_mzmine_iin_edges.csv")     # shipped
+path_polymerAnnotations = intermediate("astral_output_mzmine_polymerAnnotations.csv") # shipped
+path_polymerIDs = intermediate("astral_output_mzmine_polymerIDs.csv")           # shipped
+
+# not shipped (too large / requires the raw data from MSV000093526) -- recomputed on first run
+path_neatms = intermediate("neatms_output.csv")
+path_PurityMS = intermediate("PurityMS.csv")
+path_chimericThings = intermediate("astral_output_mzmine_chimericThings.csv")
+path_MS2isf_relationships = intermediate("astral_output_mzmine_msisf.csv")
+path_isoCheckFromMS1 = intermediate("isoCheckFromMS1.csv")
+
+# figure tables written at the end of this script (inputs of the make_Fig*.R scripts)
+path_out_feature_map = paste0(results_directory, "feature_map.tsv")
+path_out_feature_map_histograms = paste0(results_directory, "FeatureMapHistograms.tsv")
+
+# the two most concentrated samples, used as the RT reference for the feature map
+rt_reference_samples = c("015_Sa02_Water_POS.mzML", "017_Sa01_Water_POS.mzML")
 
 
 
@@ -659,7 +699,9 @@ dt_meltedupset_plot_features[annotated == 'no' & (`row ID` %in% dt_ms2s$id), ann
 #Label chimeric spectra
 ################################################
 if(!file.exists(path_PurityMS)){
-  fls = list.files('C:/PostDoc/Project_ISF_suizdak/spectrosor_results/mzMine_output_after_mzRAPP/water_raw', full.names = TRUE)
+  # needs the mzML files (MSV000093526); ~1 h on a laptop. The result is cached so that
+  # the chimeric-MS2 labelling below can be redone without the raw data.
+  fls = list.files(path_raw_files, pattern = '\\.mzML$', full.names = TRUE)
   
   #get number of cores
   if (Sys.info()[['sysname']] == "Windows") {
@@ -669,6 +711,8 @@ if(!file.exists(path_PurityMS)){
   }
   
   pa <- purityA(fls, cores = cores)
+  pa <- as.data.table(pa@puritydf)
+  fwrite(pa, path_PurityMS)
   
 } else {
   print('Loading PurityMS')
@@ -751,8 +795,11 @@ if(!file.exists(path_polymerAnnotations)){
   fwrite(dt_polymer_ids_dt, path_polymerIDs)
   fwrite(dt_polymer_dt, path_polymerAnnotations)
 } else {
+  # read the *IDs* table: path_polymerAnnotations holds every peak detectHomologues saw,
+  # while the fresh branch above passes on only the peaks that are part of a series.
   print('Loading Polymer annotation table')
-  dt_polymer_ids_dt = fread(path_polymerAnnotations)
+  dt_polymer_ids_dt = fread(path_polymerIDs)
+  dt_polymer_ids_dt = dt_polymer_ids_dt[within_series_id >= 1]
 }
 
 dt_polymer_ids_dt[, mz_diff := round(mz[within_series_id == 2] - mz[within_series_id == 1], 3), by =.(homologue_id)]
@@ -847,6 +894,9 @@ dt_meltedupset_plot_features_grouped[annotated_feature == 'no', annotated_featur
 
 dt_meltedupset_plot_features_grouped[, annotated_feature_f := factor(annotated_feature, c("No MS/MS", "Chimeric MS/MS", "Unknown MS/MS", "Annotated MS/MS"))]
 
+# this table is ./data/FeatureMapHistograms.tsv, the input of make_Fig1e_plots.R
+fwrite(dt_meltedupset_plot_features_grouped, path_out_feature_map_histograms, sep = '\t')
+
 p_hist = 
 ggplot(dt_meltedupset_plot_features_grouped, aes(x = log10(max_area), fill = annotated_feature_f)) +
   theme_classic() +
@@ -863,3 +913,79 @@ ggplot(dt_meltedupset_plot_features_grouped, aes(x = log10(max_area), fill = ann
 
 p_hist
 
+
+
+####
+##Feature map table (input of make_Fig2a_plots.R)
+####################################
+####################################
+
+dt = fread(path_mzmine_g)
+dt <- dt[, Filter(function(x) !all(is.na(x)), .SD)]
+
+# RT of every feature in the two most concentrated samples; the sample in which the feature
+# is highest provides its RT for the map
+rt_cols = colnames(dt)[grepl(':rt$', colnames(dt))]
+dt_melted_rt = melt(dt,
+                    id.vars = c('id'),
+                    measure.vars = rt_cols,
+                    value.name = 'rt')
+dt_melted_rt = dt_melted_rt[variable %in% paste0('datafile:', rt_reference_samples, ':rt')]
+dt_melted_rt[, variable := gsub('rt$', '', variable)]
+
+height_cols = colnames(dt)[grepl(':height$', colnames(dt))]
+dt_melted_height = melt(dt,
+                        id.vars = c('id'),
+                        measure.vars = height_cols,
+                        value.name = 'height')
+dt_melted_height = dt_melted_height[variable %in% paste0('datafile:', rt_reference_samples, ':height')]
+dt_melted_height[, variable := gsub('height$', '', variable)]
+
+dt_tmp = merge(dt_melted_height, dt_melted_rt, by = c('id', 'variable'))
+dt_tmp[, max := variable[which.max(height)], by = id]
+dt_tmp = dt_tmp[variable == max]
+dt_tmp = dt_tmp[, c('id', 'rt')]
+setnames(dt_tmp, 'id', 'row ID')
+
+scatter_dt = dt_meltedupset_plot_features[, c('row ID', 'feature_group', 'mz', 'annotated',
+                                              'max_area', 'clique_id', 'MS2_isf_id')]
+scatter_dt = merge(scatter_dt, dt_tmp, by = 'row ID')
+
+# an annotation is carried to every feature of a group; groups are, in order of precedence,
+# MZmine correlation cliques, MS2/in-source-fragment relationships, and 1 s RT windows
+scatter_dt[, rt_group := round(rt*60, 0)]
+
+scatter_dt[, annotated_grp := ifelse(any(annotated == 'yes'), 'CorGroup', 'no'), by =.(clique_id)]
+scatter_dt[annotated == 'yes', annotated_grp := 'yes']
+scatter_dt[annotated_grp != 'CorGroup', annotated_grp := ifelse(any(annotated == 'yes'), 'MS2isf', 'no'), by =.(MS2_isf_id)]
+scatter_dt[annotated == 'yes', annotated_grp := 'yes']
+scatter_dt[annotated_grp != 'CorGroup' & annotated_grp != 'MS2isf', annotated_grp := ifelse(any(annotated == 'yes'), 'RTGroup', 'no'), by =.(rt_group)]
+scatter_dt[annotated == 'yes', annotated_grp := 'yes']
+scatter_dt[annotated_grp == 'no' & (`row ID` %in% dt_ms2s$id), annotated_grp := 'has MS2']
+scatter_dt[(`row ID` %in% chimeric_spectra_ids) &
+             annotated_grp == 'has MS2', annotated_grp := 'chimeric MS2']
+
+# polymer detection for the map is run on the map's own RT/intensity values and is more
+# permissive than the one used for the filter table above
+dt_polymer_map = scatter_dt[, c('row ID', 'rt', 'mz', 'max_area')]
+colnames(dt_polymer_map) = c('peak_id', 'rt', 'mz', 'intensity')
+
+dt_polymer_map = detectHomologues(as_tibble(dt_polymer_map), mz_min = 20, mz_max = 80,
+                                  rt_min = 0.01, rt_max = 400, ppm_tolerance = 5,
+                                  min_series_length = 4,
+                                  search_mode = "untargeted",
+                                  step_mode = "increment",
+                                  verbose = TRUE)
+
+dt_polymer_map = as.data.table(getPolymerIds(dt_polymer_map))
+dt_polymer_map = dt_polymer_map[within_series_id >= 1]
+
+scatter_dt[`row ID` %in% dt_polymer_map$peak_id, annotated_grp := 'Polymer']
+
+scatter_dt[!(`row ID` %in% dt_meltedupset_plot_features[CobinedFilters == 1]$`row ID`), annotated_grp := 'filtered']
+scatter_dt[annotated_grp %in% c('Polymer', 'yes'), annotated_grp := 'annotated']
+scatter_dt[annotated_grp %in% c('CorGroup', 'MS2isf'), annotated_grp := 'redundant']
+scatter_dt[annotated_grp %in% c('no', 'RTGroup', 'has MS2', 'chimeric MS2'), annotated_grp := 'dark']
+
+# this table is ./data/feature_map.tsv, the input of make_Fig2a_plots.R
+fwrite(scatter_dt, path_out_feature_map, sep = '\t')

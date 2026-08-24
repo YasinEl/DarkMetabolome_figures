@@ -62,6 +62,9 @@ p <- ggplot(aggregated_data, aes(x = num_files, y = N)) +
   theme_classic()
 
 
+# this table is ./data/rarefaction_curve_spectra_<sample_type>.tsv, the input of make_Fig1f_plots.R
+fwrite(aggregated_data, paste0("rarefaction_curve_spectra_", sample_type, ".tsv"), sep = "\t")
+
 ggsave(paste0("rarefaction_curve_spectra_", sample_type, ".pdf"), plot = p, width = 8, height = 6)
 
 
